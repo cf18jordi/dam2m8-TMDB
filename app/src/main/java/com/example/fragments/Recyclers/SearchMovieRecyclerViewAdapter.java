@@ -17,7 +17,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.fragments.Config.GlideApp;
+import com.example.fragments.Config.GlideModuleApp;
 import com.example.fragments.DetailFragment;
 import com.example.fragments.Model.Film.Film;
 import com.example.fragments.R;

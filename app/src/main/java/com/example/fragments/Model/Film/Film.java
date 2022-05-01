@@ -14,10 +14,6 @@ public class Film implements Serializable {
         return original_title;
     }
 
-    public double getVote_average() {
-        return vote_average;
-    }
-
     public String getPoster_path() {
         return poster_path;
     }
@@ -30,7 +26,4 @@ public class Film implements Serializable {
         return overview;
     }
 
-    public String getRelease_date() {
-        return release_date;
-    }
 }

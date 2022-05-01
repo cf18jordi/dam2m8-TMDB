@@ -1,6 +1,9 @@
 package com.example.fragments;
 
+import static com.example.fragments.Config.DefaultConstants.API_KEY;
 import static com.example.fragments.Config.DefaultConstants.BASE_IMG_URL;
+import static com.example.fragments.Config.DefaultConstants.SESSION_ID;
+import static com.example.fragments.Config.DefaultConstants.retrofit;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,24 +14,32 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.fragments.Config.GlideApp;
+import com.example.fragments.Config.ApiCall;
+import com.example.fragments.Model.Film.Favorites;
+import com.example.fragments.Model.Film.FavFilmRequest;
+import com.example.fragments.Model.Film.FavFilmResponse;
 import com.example.fragments.Model.Film.Film;
 import com.example.fragments.Model.List.List;
 import com.example.fragments.Recyclers.AddMovieListsRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 
 public class DetailFragment extends Fragment {
-
+    boolean isFav = false;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -58,10 +69,68 @@ public class DetailFragment extends Fragment {
                 .centerCrop()
                 .into(imgDetail);
 
+        ApiCall apiCall = retrofit.create(ApiCall.class);
+        Call<Favorites> call = apiCall.getFavData(API_KEY, SESSION_ID);
+        call.enqueue(new Callback<Favorites>(){
+            @Override
+            public void onResponse(Call<Favorites> call, Response<Favorites> response) {
+                if(response.code()!=200){
+                    Log.i("testApi", "checkConnection");
+                    return;
+                }else {
+                    ArrayList<Film> arraySearch = new ArrayList<>();
+                    arraySearch = response.body().getResult();
+                    for(Film favFilm: arraySearch) {
+                        if(film.getId() == favFilm.getId()) {
+                            btnFav.setImageResource(R.drawable.ic_fav_on);
+                            isFav = true;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Favorites> call, Throwable t) {
+
+            }
+        });
+
         btnFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                btnFav.setImageResource(R.drawable.ic_fav_on);
+                if(isFav) {
+                    btnFav.setImageResource(R.drawable.ic_fav_off);
+                    ApiCall apiCall = retrofit.create(ApiCall.class);
+                    FavFilmRequest favFilmRequest = new FavFilmRequest("movie", film.getId(), false);
+                    Call<FavFilmResponse> call = apiCall.postFavMovie(API_KEY, SESSION_ID, favFilmRequest);
+                    call.enqueue(new Callback<FavFilmResponse>() {
+                        @Override
+                        public void onResponse(Call<FavFilmResponse> call, Response<FavFilmResponse> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<FavFilmResponse> call, Throwable t) {
+
+                        }
+                    });
+                } else {
+                    btnFav.setImageResource(R.drawable.ic_fav_on);
+                    ApiCall apiCall = retrofit.create(ApiCall.class);
+                    FavFilmRequest favFilmRequest = new FavFilmRequest("movie", film.getId(), true);
+                    Call<FavFilmResponse> call = apiCall.postFavMovie(API_KEY, SESSION_ID, favFilmRequest);
+                    call.enqueue(new Callback<FavFilmResponse>() {
+                        @Override
+                        public void onResponse(Call<FavFilmResponse> call, Response<FavFilmResponse> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<FavFilmResponse> call, Throwable t) {
+
+                        }
+                    });
+                }
             }
         });
 

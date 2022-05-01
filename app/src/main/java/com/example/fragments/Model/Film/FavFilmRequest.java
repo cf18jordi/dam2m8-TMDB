@@ -1,5 +1,13 @@
 package com.example.fragments.Model.Film;
 
 public class FavFilmRequest {
+    String media_type;
+    int media_id;
+    boolean favorite;
 
+    public FavFilmRequest(String media_type, int media_id, boolean favorite) {
+        this.media_type = media_type;
+        this.media_id = media_id;
+        this.favorite = favorite;
+    }
 }
